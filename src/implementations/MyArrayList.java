@@ -1,11 +1,21 @@
 package implementations;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import utilities.Iterator;
 import utilities.ListADT;
 
+/**
+ * Implementation of MyArrayList which provides a dynamic array-based list using
+ * the ListADT interface and Iterator interface.
+ *
+ * @param <E> The type of elements in this list.
+ */
 public class MyArrayList<E> implements ListADT<E> {
+	// for classes that implement serializable, used to maintain versioning for
+	// deserialization.
+	private static final long serialVersionUID = 1L;
 	private static final int DEFAULT_CAPACITY = 10;
 	private E[] elements;
 	private int size;
@@ -23,18 +33,16 @@ public class MyArrayList<E> implements ListADT<E> {
 		return size;
 	}
 
-	// type casting a new object array to the generic array
-	// is not good for type safety but necessary here
-	@SuppressWarnings("unchecked")
 	@Override
 	public void clear() {
+		for (int i = 0; i < size; i++) {
+			elements[i] = null;
+		}
 		size = 0;
-
-		elements = (E[]) new Object[DEFAULT_CAPACITY];
 	}
 
 	@Override
-	public boolean add(int index, E toAdd) {
+	public boolean add(int index, E toAdd) throws NullPointerException, IndexOutOfBoundsException {
 		if (toAdd == null) {
 			throw new NullPointerException("Cannot add null element to list.");
 		}
@@ -43,11 +51,11 @@ public class MyArrayList<E> implements ListADT<E> {
 			throw new IndexOutOfBoundsException("Index out of bounds.");
 		}
 
-		if (size == elements.length) {
+		if (size >= elements.length) {
 			elements = Arrays.copyOf(elements, elements.length * 2);
 		}
+
 		// Copying into the array to make space for the new element
-		// System array copy instead of array.copy is more efficient (native to c/c++
 		System.arraycopy(elements, index, elements, index + 1, size - index);
 		elements[index] = toAdd;
 		size++;
@@ -55,24 +63,38 @@ public class MyArrayList<E> implements ListADT<E> {
 		return true;
 	}
 
+	/**
+	 * Appends the specified element to the end of the list, resizing if necessary.
+	 */
 	@Override
-	public boolean add(E toAdd) {
+	public boolean add(E toAdd) throws NullPointerException {
 		if (toAdd == null) {
 			throw new NullPointerException("Cannot add null element to list.");
 		}
 
-		if (size == elements.length) {
+		if (size >= elements.length) {
 			elements = Arrays.copyOf(elements, elements.length * 2);
 		}
 
-		elements[size] = toAdd;
-		size++;
+		elements[size++] = toAdd;
+		return true;
+	}
 
+	// ? extends E so we can use subtypes of E when adding to the list.
+	@Override
+	public boolean addAll(ListADT<? extends E> toAdd) throws NullPointerException {
+		if (toAdd == null) {
+			throw new NullPointerException("Cannot add null list to list.");
+		}
+
+		for (int i = 0; i < toAdd.size(); i++) {
+			add(toAdd.get(i));
+		}
 		return true;
 	}
 
 	@Override
-	public E get(int index) {
+	public E get(int index) throws IndexOutOfBoundsException {
 		if (index < 0 || index >= size) {
 			throw new IndexOutOfBoundsException("Index out of bounds.");
 		}
@@ -80,14 +102,33 @@ public class MyArrayList<E> implements ListADT<E> {
 	}
 
 	@Override
-	public E remove(int index) {
+	public E remove(int index) throws IndexOutOfBoundsException {
 		if (index < 0 || index >= size) {
 			throw new IndexOutOfBoundsException("Index out of bounds.");
 		}
+
 		E removedElement = elements[index];
-		System.arraycopy(elements, index + 1, elements, index, size - index - 1);
-		size--;
+		int numMoved = size - index - 1;
+		if (numMoved > 0) {
+			System.arraycopy(elements, index + 1, elements, index, numMoved);
+		}
+		elements[--size] = null;
+
 		return removedElement;
+	}
+
+	@Override
+	public E remove(E toRemove) throws NullPointerException {
+		if (toRemove == null) {
+			throw new NullPointerException("Cannot remove null element from list.");
+		}
+
+		for (int i = 0; i < size; i++) {
+			if (elements[i].equals(toRemove)) {
+				return remove(i);
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -96,23 +137,76 @@ public class MyArrayList<E> implements ListADT<E> {
 	}
 
 	@Override
+	public boolean contains(E toFind) throws NullPointerException {
+		if (toFind == null) {
+			throw new NullPointerException("Cannot find null element in list.");
+		}
+
+		for (int i = 0; i < size; i++) {
+			if (elements[i].equals(toFind)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public E[] toArray(E[] toHold) throws NullPointerException {
+		if (toHold == null) {
+			throw new NullPointerException("Cannot copy elements to null array.");
+		}
+
+		if (toHold.length < size) {
+			return (E[]) Arrays.copyOf(elements, size, toHold.getClass());
+		}
+
+		System.arraycopy(elements, 0, toHold, 0, size);
+		if (toHold.length > size) {
+			toHold[size] = null;
+		}
+		return toHold;
+	}
+
+	@Override
+	public Object[] toArray() {
+		return Arrays.copyOf(elements, size);
+	}
+
+	@Override
 	public Iterator<E> iterator() {
-		return new Iterator<E>() {
-			private int currentIndex = 0;
+		return new MyArrayListIterator();
+	}
 
-			@Override
-			public boolean hasNext() {
-				return currentIndex < size;
+	@Override
+	public E set(int index, E toChange) throws NullPointerException, IndexOutOfBoundsException {
+		if (toChange == null) {
+			throw new NullPointerException("Cannot set null element in list.");
+		}
+
+		if (index < 0 || index >= size) {
+			throw new IndexOutOfBoundsException("Index out of bounds.");
+		}
+
+		E oldElement = elements[index];
+		elements[index] = toChange;
+		return oldElement;
+	}
+
+	private class MyArrayListIterator implements Iterator<E> {
+		private int currentIndex = 0;
+
+		@Override
+		public boolean hasNext() {
+			return currentIndex < size;
+		}
+
+		@Override
+		public E next() throws NoSuchElementException {
+			if (!hasNext()) {
+				throw new NoSuchElementException("No more elements in list.");
 			}
-
-			@Override
-			public E next() {
-				if (!hasNext()) {
-					throw new IndexOutOfBoundsException("No more elements to iterate over.");
-				}
-
-				return elements[currentIndex++];
-			}
-		};
+			return elements[currentIndex++];
+		}
 	}
 }
