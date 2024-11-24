@@ -1,5 +1,6 @@
 package implementations;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
@@ -12,7 +13,7 @@ import utilities.ListADT;
  *
  * @param <E> The type of elements in this list.
  */
-public class MyArrayList<E> implements ListADT<E> {
+public class MyArrayList<E> implements ListADT<E>, Serializable {
 	// for classes that implement serializable, used to maintain versioning for
 	// deserialization.
 	private static final long serialVersionUID = 1L;
