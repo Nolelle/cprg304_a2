@@ -7,19 +7,33 @@ import utilities.Iterator;
 import utilities.QueueADT;
 
 /**
- * MyQueue implementation using MyDLL as the underlying data structure.
+ * An implementation of the QueueADT interface using a doubly-linked list
+ * (MyDLL) as the underlying data structure. This class provides a
+ * First-In-First-Out (FIFO) queue implementation.
  * 
- * @param <E> the type of elements in this queue.
+ * @param <E> The type of elements in this queue
+ * @author Ed
+ * @version 1.0
  */
 public class MyQueue<E> implements QueueADT<E>, Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * The underlying doubly-linked list used to store queue elements.
+	 */
 	private MyDLL<E> list;
 
+	/**
+	 * Constructs an empty queue.
+	 */
 	public MyQueue() {
 		list = new MyDLL<>();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void enqueue(E toAdd) throws NullPointerException {
 		if (toAdd == null) {
@@ -28,6 +42,9 @@ public class MyQueue<E> implements QueueADT<E>, Serializable {
 		list.add(toAdd);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E dequeue() throws EmptyQueueException {
 		if (isEmpty()) {
@@ -36,6 +53,9 @@ public class MyQueue<E> implements QueueADT<E>, Serializable {
 		return list.remove(0); // Remove the first element
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E peek() throws EmptyQueueException {
 		if (isEmpty()) {
@@ -44,21 +64,33 @@ public class MyQueue<E> implements QueueADT<E>, Serializable {
 		return list.get(0); // Get the first element without removing
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void dequeueAll() {
 		list.clear();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isEmpty() {
 		return list.isEmpty();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean contains(E toFind) throws NullPointerException {
 		return list.contains(toFind);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int search(E toFind) {
 		for (int i = 0; i < list.size(); i++) {
@@ -69,11 +101,17 @@ public class MyQueue<E> implements QueueADT<E>, Serializable {
 		return -1; // Not found
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Iterator<E> iterator() {
 		return list.iterator();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals(QueueADT<E> that) {
 		if (that == null || this.size() != that.size()) {
@@ -89,22 +127,34 @@ public class MyQueue<E> implements QueueADT<E>, Serializable {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Object[] toArray() {
 		return list.toArray();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E[] toArray(E[] holder) throws NullPointerException {
 		return list.toArray(holder);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isFull() {
 		// Since the queue is dynamic, it is never "full."
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int size() {
 		return list.size();

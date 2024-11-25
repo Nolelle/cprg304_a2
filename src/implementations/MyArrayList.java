@@ -8,32 +8,52 @@ import utilities.Iterator;
 import utilities.ListADT;
 
 /**
- * Implementation of MyArrayList which provides a dynamic array-based list using
- * the ListADT interface and Iterator interface.
- *
- * @param <E> The type of elements in this list.
+ * An implementation of the ListADT interface using a dynamic array as the
+ * underlying data structure. This class provides a resizable-array
+ * implementation of the ListADT interface with dynamic capacity management.
+ * 
+ * @param <E> The type of elements in this list
+ * @author Edmund
+ * @version 1.0
  */
 public class MyArrayList<E> implements ListADT<E>, Serializable {
 	// for classes that implement serializable, used to maintain versioning for
 	// deserialization.
 	private static final long serialVersionUID = 1L;
+	/**
+	 * Default initial capacity for the array list.
+	 */
 	private static final int DEFAULT_CAPACITY = 10;
+	/**
+	 * Array buffer into which the elements of the ArrayList are stored.
+	 */
 	private E[] elements;
+	/**
+	 * The number of elements currently stored in the list.
+	 */
 	private int size;
 
+	/**
+	 * Constructs an empty list with an initial capacity of DEFAULT_CAPACITY.
+	 */
 	// type casting a new object array to the generic array
-	// is not good for type safety but necessary here
 	@SuppressWarnings("unchecked")
 	public MyArrayList() {
 		elements = (E[]) new Object[DEFAULT_CAPACITY];
 		size = 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int size() {
 		return size;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void clear() {
 		for (int i = 0; i < size; i++) {
@@ -42,6 +62,13 @@ public class MyArrayList<E> implements ListADT<E>, Serializable {
 		size = 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * If necessary, the capacity of the array is increased to accommodate the new
+	 * element.
+	 * </p>
+	 */
 	@Override
 	public boolean add(int index, E toAdd) throws NullPointerException, IndexOutOfBoundsException {
 		if (toAdd == null) {
@@ -65,7 +92,10 @@ public class MyArrayList<E> implements ListADT<E>, Serializable {
 	}
 
 	/**
-	 * Appends the specified element to the end of the list, resizing if necessary.
+	 * {@inheritDoc}
+	 * <p>
+	 * Appends the element at the end of the list, increasing capacity if necessary.
+	 * </p>
 	 */
 	@Override
 	public boolean add(E toAdd) throws NullPointerException {
@@ -81,6 +111,9 @@ public class MyArrayList<E> implements ListADT<E>, Serializable {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	// ? extends E so we can use subtypes of E when adding to the list.
 	@Override
 	public boolean addAll(ListADT<? extends E> toAdd) throws NullPointerException {
@@ -94,6 +127,9 @@ public class MyArrayList<E> implements ListADT<E>, Serializable {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E get(int index) throws IndexOutOfBoundsException {
 		if (index < 0 || index >= size) {
@@ -102,6 +138,9 @@ public class MyArrayList<E> implements ListADT<E>, Serializable {
 		return elements[index];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E remove(int index) throws IndexOutOfBoundsException {
 		if (index < 0 || index >= size) {
@@ -118,6 +157,9 @@ public class MyArrayList<E> implements ListADT<E>, Serializable {
 		return removedElement;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E remove(E toRemove) throws NullPointerException {
 		if (toRemove == null) {
@@ -132,11 +174,17 @@ public class MyArrayList<E> implements ListADT<E>, Serializable {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean contains(E toFind) throws NullPointerException {
 		if (toFind == null) {
@@ -151,6 +199,17 @@ public class MyArrayList<E> implements ListADT<E>, Serializable {
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Object[] toArray() {
+		return Arrays.copyOf(elements, size);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public E[] toArray(E[] toHold) throws NullPointerException {
@@ -169,16 +228,17 @@ public class MyArrayList<E> implements ListADT<E>, Serializable {
 		return toHold;
 	}
 
-	@Override
-	public Object[] toArray() {
-		return Arrays.copyOf(elements, size);
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Iterator<E> iterator() {
 		return new MyArrayListIterator();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E set(int index, E toChange) throws NullPointerException, IndexOutOfBoundsException {
 		if (toChange == null) {
@@ -194,6 +254,9 @@ public class MyArrayList<E> implements ListADT<E>, Serializable {
 		return oldElement;
 	}
 
+	/**
+	 * Iterator implementation for MyArrayList.
+	 */
 	private class MyArrayListIterator implements Iterator<E> {
 		private int currentIndex = 0;
 

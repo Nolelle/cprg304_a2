@@ -7,30 +7,51 @@ import utilities.Iterator;
 import utilities.ListADT;
 
 /**
- * Implementation of MyDLL which provides a doubly linked list using the ListADT
- * interface and Iterator interface.
+ * An implementation of the ListADT interface using a doubly-linked list as the
+ * underlying data structure. This class provides a linked list implementation
+ * where each node contains references to both the next and previous nodes.
  *
- * @param <E> The type of elements in this list.
+ * @param <E> The type of elements in this list
+ * @author Ed
+ * @version 1.0
  */
 public class MyDLL<E> implements ListADT<E>, Serializable {
 	// for classes that implement serializable, used to maintain versioning for
 	// deserialization.
 	private static final long serialVersionUID = 1L;
+	/**
+	 * Reference to the first node in the list.
+	 */
 	private MyDLLNode<E> head;
+	/**
+	 * Reference to the last node in the list.
+	 */
 	private MyDLLNode<E> tail;
+	/**
+	 * The number of elements currently stored in the list.
+	 */
 	private int size;
 
+	/**
+	 * Constructs an empty doubly-linked list.
+	 */
 	public MyDLL() {
 		head = null;
 		tail = null;
 		size = 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int size() {
 		return size;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void clear() {
 		head = null;
@@ -38,6 +59,9 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		size = 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean add(int index, E toAdd) throws NullPointerException, IndexOutOfBoundsException {
 		if (toAdd == null) {
@@ -74,11 +98,17 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean add(E toAdd) throws NullPointerException {
 		return add(size, toAdd);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean addAll(ListADT<? extends E> toAdd) throws NullPointerException {
 		if (toAdd == null) {
@@ -90,6 +120,9 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E get(int index) throws IndexOutOfBoundsException {
 		if (index < 0 || index >= size) {
@@ -98,6 +131,9 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		return getNode(index).data;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E remove(int index) throws IndexOutOfBoundsException {
 		if (index < 0 || index >= size) {
@@ -120,6 +156,9 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		return toRemove.data;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E remove(E toRemove) throws NullPointerException {
 		if (toRemove == null) {
@@ -150,11 +189,17 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean contains(E toFind) throws NullPointerException {
 		if (toFind == null) {
@@ -170,6 +215,9 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E[] toArray(E[] toHold) throws NullPointerException {
 		if (toHold == null) {
@@ -189,6 +237,9 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		return toHold;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Object[] toArray() {
 		Object[] result = new Object[size];
@@ -200,11 +251,17 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		return result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Iterator<E> iterator() {
 		return new MyDLLIterator();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public E set(int index, E toChange) throws NullPointerException, IndexOutOfBoundsException {
 		if (toChange == null) {
@@ -219,6 +276,16 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		return oldData;
 	}
 
+	/**
+	 * Returns the node at the specified position.
+	 * <p>
+	 * This helper method optimizes traversal by starting from the closer end of the
+	 * list based on the specified index.
+	 * </p>
+	 *
+	 * @param index the position of the desired node
+	 * @return the node at the specified position
+	 */
 	private MyDLLNode<E> getNode(int index) {
 		MyDLLNode<E> current;
 		if (index < size / 2) {
@@ -235,6 +302,9 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		return current;
 	}
 
+	/**
+	 * Iterator implementation for MyDLL.
+	 */
 	private class MyDLLIterator implements Iterator<E> {
 		private MyDLLNode<E> current = head;
 
@@ -254,6 +324,9 @@ public class MyDLL<E> implements ListADT<E>, Serializable {
 		}
 	}
 
+	/**
+	 * Node class for the doubly-linked list.
+	 */
 	private static class MyDLLNode<E> {
 		E data;
 		MyDLLNode<E> next;
